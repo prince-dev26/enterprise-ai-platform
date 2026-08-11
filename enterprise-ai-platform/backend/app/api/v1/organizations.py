@@ -1,10 +1,14 @@
 from uuid import UUID
 
 from app.dependencies.database import get_db
-from app.schemas.organization import OrganizationCreate, OrganizationRead
 from app.services.organization import OrganizationService
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from app.schemas.organization import (
+    OrganizationCreate,
+    OrganizationRead,
+    OrganizationUpdate,
+)
 
 router = APIRouter(
     prefix="/organizations",
@@ -72,3 +76,41 @@ def get_organizations(
         page=page,
         page_size=page_size,
     )
+
+@router.patch(
+    "/{organization_id}",
+    response_model=OrganizationRead,
+)
+def update_organization(
+    organization_id: UUID,
+    data: OrganizationUpdate,
+    db: Session = Depends(get_db),
+) -> OrganizationRead:
+    service = OrganizationService(db)
+
+    try:
+        organization = service.update(
+            organization_id=organization_id,
+            data=data,
+        )
+
+        if organization is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Organization not found",
+            )
+
+        db.commit()
+        db.refresh(organization)
+
+        return organization
+
+    except ValueError as exc:
+        db.rollback()
+
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=str(exc),
+        ) from exc
+
+

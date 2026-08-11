@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.models.organization import Organization
 from app.repositories.organization import OrganizationRepository
-from app.schemas.organization import OrganizationCreate
+from app.schemas.organization import OrganizationCreate, OrganizationUpdate
 
 
 class OrganizationService:
@@ -25,6 +25,35 @@ class OrganizationService:
 
         return self.repository.create(organization)
 
+    def update(
+        self,
+        organization_id: UUID,
+        data: OrganizationUpdate,
+    ) -> Organization | None:
+
+        organization = self.repository.get_by_id(organization_id)
+
+        if organization is None:
+            return None
+
+        update_data = data.model_dump(exclude_unset=True)
+
+        if "slug" in update_data:
+            existing_organization = self.repository.get_by_slug(
+                update_data["slug"]
+            )
+
+            if (
+                existing_organization
+                and existing_organization.id != organization_id
+            ):
+                raise ValueError("Organization slug already exists")
+
+        return self.repository.update(
+            organization=organization,
+            data=update_data,
+        )
+
     def get_by_id(
         self,
         organization_id: UUID,
@@ -32,11 +61,11 @@ class OrganizationService:
         return self.repository.get_by_id(organization_id)
 
     def get_all(
-    self,
-    page: int,
-    page_size: int,
+        self,
+        page: int,
+        page_size: int,
     ) -> list[Organization]:
-     return self.repository.get_all(
-        page=page,
-        page_size=page_size,
-    )
+        return self.repository.get_all(
+            page=page,
+            page_size=page_size,
+        )
