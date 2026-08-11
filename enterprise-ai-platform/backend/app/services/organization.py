@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from sqlalchemy.orm import Session
 
 from app.models.organization import Organization
@@ -22,3 +24,9 @@ class OrganizationService:
         )
 
         return self.repository.create(organization)
+
+    def get_by_id(
+        self,
+        organization_id: UUID,
+    ) -> Organization | None:
+        return self.repository.get_by_id(organization_id)

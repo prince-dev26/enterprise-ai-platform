@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.dependencies.database import get_db
 from app.schemas.organization import OrganizationCreate, OrganizationRead
 from app.services.organization import OrganizationService
+from uuid import UUID
 
 
 router = APIRouter(
@@ -36,3 +37,22 @@ def create_organization(
             status_code=status.HTTP_409_CONFLICT,
             detail=str(exc),
         ) from exc
+
+
+@router.get(
+    "/{organization_id}",
+    response_model=OrganizationRead,
+  )
+def get_organization(
+    organization_id: UUID,
+    db: Session = Depends(get_db),
+) -> OrganizationRead:
+     service = OrganizationService(db)
+
+     organization = service.get_by_id(organization_id)
+     if organization is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Organization not found",
+        )
+     return organization
