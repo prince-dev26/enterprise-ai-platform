@@ -56,3 +56,14 @@ def get_organization(
             detail="Organization not found",
         )
      return organization
+
+@router.get(
+    "",
+    response_model=list[OrganizationRead],
+)
+def get_organizations(
+    db: Session = Depends(get_db),
+) -> list[OrganizationRead]:
+    service = OrganizationService(db)
+
+    return service.get_all()

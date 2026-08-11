@@ -30,3 +30,10 @@ class OrganizationRepository:
         self.db.flush()
 
         return organization
+
+    def get_all(self) -> list[Organization]:
+     statement = select(Organization).order_by(
+        Organization.created_at.desc()
+    )
+
+     return list(self.db.scalars(statement).all())

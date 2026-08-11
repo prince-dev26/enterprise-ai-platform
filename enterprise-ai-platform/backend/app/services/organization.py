@@ -30,3 +30,6 @@ class OrganizationService:
         organization_id: UUID,
     ) -> Organization | None:
         return self.repository.get_by_id(organization_id)
+
+    def get_all(self) -> list[Organization]:
+      return self.repository.get_all()
