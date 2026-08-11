@@ -42,28 +42,34 @@ def create_organization(
 @router.get(
     "/{organization_id}",
     response_model=OrganizationRead,
-  )
+)
 def get_organization(
     organization_id: UUID,
     db: Session = Depends(get_db),
 ) -> OrganizationRead:
-     service = OrganizationService(db)
+    service = OrganizationService(db)
 
-     organization = service.get_by_id(organization_id)
-     if organization is None:
+    organization = service.get_by_id(organization_id)
+    if organization is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Organization not found",
         )
-     return organization
+    return organization
+
 
 @router.get(
     "",
     response_model=list[OrganizationRead],
 )
 def get_organizations(
+    page: int = 1,
+    page_size: int = 20,
     db: Session = Depends(get_db),
 ) -> list[OrganizationRead]:
     service = OrganizationService(db)
 
-    return service.get_all()
+    return service.get_all(
+        page=page,
+        page_size=page_size,
+    )

@@ -7,21 +7,16 @@ from app.models.organization import Organization
 
 
 class OrganizationRepository:
-
     def __init__(self, db: Session):
         self.db = db
 
     def get_by_id(self, organization_id: UUID) -> Organization | None:
-        statement = select(Organization).where(
-            Organization.id == organization_id
-        )
+        statement = select(Organization).where(Organization.id == organization_id)
 
         return self.db.scalar(statement)
 
     def get_by_slug(self, slug: str) -> Organization | None:
-        statement = select(Organization).where(
-            Organization.slug == slug
-        )
+        statement = select(Organization).where(Organization.slug == slug)
 
         return self.db.scalar(statement)
 
@@ -31,9 +26,18 @@ class OrganizationRepository:
 
         return organization
 
-    def get_all(self) -> list[Organization]:
-     statement = select(Organization).order_by(
-        Organization.created_at.desc()
-    )
+    def get_all(
+        self,
+        page: int,
+        page_size: int,
+    ) -> list[Organization]:
+        offset = (page - 1) * page_size
 
-     return list(self.db.scalars(statement).all())
+        statement = (
+            select(Organization)
+            .order_by(Organization.created_at.desc())
+            .offset(offset)
+            .limit(page_size)
+        )
+
+        return list(self.db.scalars(statement).all())

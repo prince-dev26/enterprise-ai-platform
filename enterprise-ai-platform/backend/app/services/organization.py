@@ -31,5 +31,12 @@ class OrganizationService:
     ) -> Organization | None:
         return self.repository.get_by_id(organization_id)
 
-    def get_all(self) -> list[Organization]:
-      return self.repository.get_all()
+    def get_all(
+    self,
+    page: int,
+    page_size: int,
+    ) -> list[Organization]:
+     return self.repository.get_all(
+        page=page,
+        page_size=page_size,
+    )

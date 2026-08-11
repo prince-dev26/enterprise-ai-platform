@@ -7,7 +7,6 @@ from app.security.password import hash_password
 
 
 class UserService:
-
     def __init__(self, db: Session):
         self.repository = UserRepository(db)
 
