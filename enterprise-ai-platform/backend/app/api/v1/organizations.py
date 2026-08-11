@@ -1,11 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from uuid import UUID
 
 from app.dependencies.database import get_db
 from app.schemas.organization import OrganizationCreate, OrganizationRead
 from app.services.organization import OrganizationService
-from uuid import UUID
-
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
 
 router = APIRouter(
     prefix="/organizations",
