@@ -2,6 +2,7 @@ from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class OrganizationCreate(BaseModel):
@@ -27,3 +28,8 @@ class OrganizationRead(BaseModel):
     model_config = {
         "from_attributes": True,
     }
+
+class OrganizationUpdate(BaseModel):
+    name: str | None = None
+    slug: str | None = None
+    is_active: bool | None = None
