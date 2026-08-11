@@ -1,8 +1,6 @@
 from uuid import UUID
-
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-
 from app.models.organization import Organization
 
 
@@ -41,3 +39,16 @@ class OrganizationRepository:
         )
 
         return list(self.db.scalars(statement).all())
+
+    def update(
+        self,
+        organization: Organization,
+        data: dict,
+    ) -> Organization:
+        for field, value in data.items():
+            setattr(organization, field, value)
+
+        self.db.flush()
+        self.db.refresh(organization)
+
+        return organization
