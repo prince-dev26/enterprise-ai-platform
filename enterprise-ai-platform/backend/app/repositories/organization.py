@@ -31,20 +31,21 @@ class OrganizationRepository:
         return organization
 
     def get_all(
-        self,
-        page: int,
-        page_size: int,
+     self,
+     page: int,
+     page_size: int,
     ) -> list[Organization]:
-        offset = (page - 1) * page_size
+     offset = (page - 1) * page_size
 
-        statement = (
-            select(Organization)
-            .order_by(Organization.created_at.desc())
-            .offset(offset)
-            .limit(page_size)
-        )
+     statement = (
+        select(Organization)
+        .where(Organization.is_active.is_(True))
+        .order_by(Organization.created_at.desc())
+        .offset(offset)
+        .limit(page_size)
+    )
 
-        return list(self.db.scalars(statement).all())
+     return list(self.db.scalars(statement).all())
 
     def update(
         self,
