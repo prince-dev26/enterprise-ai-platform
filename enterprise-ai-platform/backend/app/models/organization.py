@@ -1,11 +1,15 @@
 from datetime import datetime, timezone
 from uuid import uuid4
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Boolean, DateTime, String
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
+
+if TYPE_CHECKING:
+    from app.models.user import User
 
 
 class Organization(Base):
@@ -46,4 +50,8 @@ class Organization(Base):
         nullable=False,
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
+    )
+
+    users: Mapped[list["User"]] = relationship(
+    back_populates="organization",
     )
