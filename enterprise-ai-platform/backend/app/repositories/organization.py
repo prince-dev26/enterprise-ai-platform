@@ -52,3 +52,14 @@ class OrganizationRepository:
         self.db.refresh(organization)
 
         return organization
+
+    def deactivate(
+     self,
+     organization: Organization,
+    ) -> Organization:
+     organization.is_active = False
+
+     self.db.flush()
+     self.db.refresh(organization)
+
+     return organization
