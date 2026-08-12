@@ -8,10 +8,16 @@ class OrganizationRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_by_id(self, organization_id: UUID) -> Organization | None:
-        statement = select(Organization).where(Organization.id == organization_id)
+    def get_by_id(
+        self,
+      organization_id: UUID,
+    ) -> Organization | None:
+     statement = select(Organization).where(
+        Organization.id == organization_id,
+        Organization.is_active.is_(True),
+    )
 
-        return self.db.scalar(statement)
+     return self.db.scalar(statement)
 
     def get_by_slug(self, slug: str) -> Organization | None:
         statement = select(Organization).where(Organization.slug == slug)
