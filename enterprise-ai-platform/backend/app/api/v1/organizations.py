@@ -114,3 +114,27 @@ def update_organization(
         ) from exc
 
 
+@router.delete(
+    "/{organization_id}",
+    response_model=OrganizationRead,
+)
+def delete_organization(
+    organization_id: UUID,
+    db: Session = Depends(get_db),
+) -> OrganizationRead:
+    service = OrganizationService(db)
+
+    organization = service.deactivate(organization_id)
+
+    if organization is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Organization not found",
+        )
+
+    db.commit()
+    db.refresh(organization)
+
+    return organization
+
+

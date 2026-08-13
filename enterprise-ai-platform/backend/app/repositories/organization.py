@@ -8,10 +8,16 @@ class OrganizationRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_by_id(self, organization_id: UUID) -> Organization | None:
-        statement = select(Organization).where(Organization.id == organization_id)
+    def get_by_id(
+        self,
+      organization_id: UUID,
+    ) -> Organization | None:
+     statement = select(Organization).where(
+        Organization.id == organization_id,
+        Organization.is_active.is_(True),
+    )
 
-        return self.db.scalar(statement)
+     return self.db.scalar(statement)
 
     def get_by_slug(self, slug: str) -> Organization | None:
         statement = select(Organization).where(Organization.slug == slug)
@@ -25,20 +31,21 @@ class OrganizationRepository:
         return organization
 
     def get_all(
-        self,
-        page: int,
-        page_size: int,
+     self,
+     page: int,
+     page_size: int,
     ) -> list[Organization]:
-        offset = (page - 1) * page_size
+     offset = (page - 1) * page_size
 
-        statement = (
-            select(Organization)
-            .order_by(Organization.created_at.desc())
-            .offset(offset)
-            .limit(page_size)
-        )
+     statement = (
+        select(Organization)
+        .where(Organization.is_active.is_(True))
+        .order_by(Organization.created_at.desc())
+        .offset(offset)
+        .limit(page_size)
+    )
 
-        return list(self.db.scalars(statement).all())
+     return list(self.db.scalars(statement).all())
 
     def update(
         self,
@@ -52,3 +59,14 @@ class OrganizationRepository:
         self.db.refresh(organization)
 
         return organization
+
+    def deactivate(
+     self,
+     organization: Organization,
+    ) -> Organization:
+     organization.is_active = False
+
+     self.db.flush()
+     self.db.refresh(organization)
+
+     return organization

@@ -69,3 +69,14 @@ class OrganizationService:
             page=page,
             page_size=page_size,
         )
+
+    def deactivate(
+     self,
+     organization_id: UUID,
+    ) -> Organization | None:
+     organization = self.repository.get_by_id(organization_id)
+
+     if organization is None:
+        return None
+
+     return self.repository.deactivate(organization)
