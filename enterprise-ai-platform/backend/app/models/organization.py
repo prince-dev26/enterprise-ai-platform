@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from uuid import uuid4
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, DateTime, String
+from sqlalchemy import Boolean, DateTime, String, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -40,9 +40,9 @@ class Organization(Base):
     )
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        default=lambda: datetime.now(timezone.utc),
+    DateTime(timezone=True),
+    nullable=False,
+    server_default=func.now(),
     )
 
     updated_at: Mapped[datetime] = mapped_column(
