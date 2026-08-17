@@ -1,17 +1,25 @@
-from sqlalchemy.orm import Session
-
 from app.models.user import User
+from app.repositories.organization import OrganizationRepository
 from app.repositories.user import UserRepository
 from app.schemas.user import UserCreate
 from app.security.password import hash_password
+from sqlalchemy.orm import Session
 
 
 class UserService:
     def __init__(self, db: Session):
-        self.repository = UserRepository(db)
+        self.user_repository = UserRepository(db)
+        self.organization_repository = OrganizationRepository(db)
 
     def create(self, data: UserCreate) -> User:
-        existing_user = self.repository.get_by_email(
+        organization = self.organization_repository.get_by_id(
+            data.organization_id
+        )
+
+        if organization is None:
+            raise ValueError("Organization not found")
+
+        existing_user = self.user_repository.get_by_email(
             email=data.email,
             organization_id=data.organization_id,
         )
@@ -27,4 +35,4 @@ class UserService:
             last_name=data.last_name,
         )
 
-        return self.repository.create(user)
+        return self.user_repository.create(user)
