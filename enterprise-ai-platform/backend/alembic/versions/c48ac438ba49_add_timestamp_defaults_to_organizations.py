@@ -30,8 +30,8 @@ def upgrade():
         existing_type=sa.DateTime(timezone=True),
         existing_nullable=False,
     )
-
-    op.alter_column(
+ 
+    op.alter_column(     
         "organizations",
         "updated_at",
         server_default=sa.text("CURRENT_TIMESTAMP"),
